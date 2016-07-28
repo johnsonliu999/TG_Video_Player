@@ -18,6 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QCompleter* completer = new QCompleter(model, this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     ui->completeEdit->setCompleter(completer);
+
+    QSet<QString> set;
+    set << "Hello" << "US" << "Hello";
+    qDebug() << "size" << set.size();
 }
 
 MainWindow::~MainWindow()
