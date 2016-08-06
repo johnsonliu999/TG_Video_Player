@@ -28,22 +28,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     TGClient_Init();
-    long handle = TGClient_AsyncLogin((char *)"121.201.5.141", 13000, "IPC_demo", "123445", 0, MsgCallBackFun, this);
-    if (handle)
+    long loginHandle = TGClient_AsyncLogin((char *)"121.201.5.141", 13000, "IPC_demo", "123445", 0, MsgCallBackFun, this);
+    if (loginHandle)
         qDebug() << "Login succeed";
     else {
         qDebug() << "Login failed";
         return;
     }
-    TGClient_GetDeviceList(handle);
-    if(!TGClient_Logout(handle))
-        qDebug() << "Log out succeed";
-    else
-    {
-        qDebug() << "Log out failed";
-    }
 
+    quint64 playHandle = TGClient_StartRealPlay(loginHandle, (void*)ui->widget->winId(), 144115188075856027, 1, nullptr, nullptr, nullptr, this);
 }
 
 MainWindow::~MainWindow()
