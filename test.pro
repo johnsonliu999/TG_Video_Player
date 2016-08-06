@@ -21,12 +21,7 @@ HEADERS += \
     mainwindow.h \
     PlayMediaSDK.h
 
-unix|win32: LIBS += -L$$PWD/./ -lNetClientSDK
-
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
 
 unix|win32: LIBS += -L$$PWD/./ -lPlayMediaSDK
-
-INCLUDEPATH += $$PWD/.
-DEPENDPATH += $$PWD/.
