@@ -3,10 +3,6 @@
 
 #include <QMainWindow>
 
-class QTcpSocket;
-class QTime;
-class QStringListModel;
-
 namespace Ui {
 class MainWindow;
 }
@@ -21,9 +17,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
-    QStringList list;
-    QStringListModel* model;
 
 
 public slots:

@@ -18,7 +18,6 @@ FORMS += \
     mainwindow.ui
 
 HEADERS += \
-    TGClientSDK.h \
     mainwindow.h
 
 unix|win32: LIBS += -L$$PWD/./ -lNetClientSDK
