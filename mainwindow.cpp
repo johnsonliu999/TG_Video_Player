@@ -5,6 +5,8 @@
 #include <QStringListModel>
 #include <QCompleter>
 
+#include <QDebug>
+
 
 void MsgCallBackFun(const char* jsonStr, void* context)
 {
@@ -38,23 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
-    quint64 playHandle = TGClient_StartRealPlay(loginHandle, (void*)ui->widget->winId(), 144115188075856027, 1, nullptr, nullptr, nullptr, this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-void MainWindow::on_pushButton_clicked()
-{
-}
-
-
-
-void MainWindow::on_editFinished()
-{
-
-}
-
 

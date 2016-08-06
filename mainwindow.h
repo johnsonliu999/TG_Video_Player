@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QAbstractSocket>
 
 class QTcpSocket;
 class QTime;
@@ -30,8 +29,6 @@ private:
 public slots:
 
 private slots:
-    void on_pushButton_clicked();
-    void on_editFinished();
 };
 
 #endif // MAINWINDOW_H
