@@ -3,15 +3,20 @@
 
 #include "mainwindow.h"
 
+#include "tgfile.h"
+
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+//    QApplication a(argc, argv);
 
-    MainWindow mainWindow;
+//    MainWindow mainWindow;
 
-    mainWindow.show();
+//    mainWindow.show();
 
-    return a.exec();
+    TGFile f("0_005_0_20160728152348_940_2_1.tg");
+    f.open(AbstractTGFile::MODE_READ);
+    return 0;
+//    return a.exec();
 }

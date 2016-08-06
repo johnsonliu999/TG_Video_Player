@@ -12,14 +12,19 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    abstracttgfile.cpp \
+    tgfile.cpp
 
 FORMS += \
     mainwindow.ui
 
 HEADERS += \
     mainwindow.h \
-    PlayMediaSDK.h
+    PlayMediaSDK.h \
+    abstracttgfile.h \
+    tgfile.h \
+    tgfiledef.h
 
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
