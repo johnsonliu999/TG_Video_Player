@@ -14,6 +14,17 @@ TGFile::TGFile(const QString &path) :
 
 }
 
+TGFile::TGFile() :
+    m_pFile(new QFile),
+    m_fileSize(0),
+    m_frameSize(0),
+    m_frameNum(0),
+    m_startTime(0),
+    m_endTime(0)
+{
+
+}
+
 TGFile::~TGFile()
 {
     delete m_pFile;
@@ -55,6 +66,36 @@ bool TGFile::open(const AbstractTGFile::OpenMode &mode)
     return res;
 }
 
+bool TGFile::open(const QString &path)
+{
+    m_pFile->close();
+    m_pFile->setFileName(path);
+
+    if (!m_pFile->open(QFile::ReadOnly)) {
+        qDebug() << "Open error :" << m_pFile->errorString();
+        return false;
+    }
+
+    m_pFile->read((char*)&m_fileHeader, sizeof(FileHeaderBox));
+    m_pFile->read((char*)&m_indexHeader, sizeof(IndexHeaderBox));
+
+    FrameIndex index;
+    m_pFile->read((char*)&index, sizeof(FrameIndex));
+    m_indexes << index;
+    m_startTime = index.timestamp;
+
+    for (int i = 0; i < (int)m_indexHeader.indexCount-1; i++) {
+        m_pFile->read((char*)&index, sizeof(FrameIndex));
+        m_indexes << index;
+    }
+    return true;
+}
+
+bool TGFile::isOpen()
+{
+    return m_pFile->isOpen();
+}
+
 void TGFile::close()
 {
     m_pFile->close();
@@ -77,7 +118,7 @@ PictureSize TGFile::getPictureSize()
 
 ///
 /// \brief TGFile::readFrame
-/// file pointer should be located at frame beginning
+/// file pointer should be located at certain frame offset
 /// \param buffer
 /// \param bufSize
 /// \param frameInfo
@@ -166,6 +207,15 @@ bool TGFile::seekFrameBeginning()
     }
     qDebug() << "Seek Frame Beginning :" << m_pFile->pos();
     return true;
+}
+
+bool TGFile::seek(const quint64 &relativeTime)
+{
+    for (int i = 0; i < m_indexes.size(); i++) {
+        if (m_indexes.at(i).timestamp - m_startTime >= relativeTime) {
+            return m_pFile->seek(m_indexes.at(i).offset);
+        }
+    }
 }
 
 qint64 TGFile::pos()

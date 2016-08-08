@@ -24,9 +24,12 @@ public:
     };
 
     TGFile(const QString& path);
+    TGFile();
     ~TGFile();
 
     bool open(const OpenMode &mode) override final;
+    bool open(const QString &path);
+    bool isOpen();
     void close() override final;
     quint64 getTimeLength() override final;
     quint64 getFileSize() override final;
@@ -34,6 +37,7 @@ public:
     qint64 readFrame(quint8* buffer, const quint64 &bufSize, FrameInfo &frameInfo) override final;
     bool atEnd() override final;
     bool seekFrameBeginning();
+    bool seek(const quint64 &relativeTime);
     qint64 pos();
 private:
     QFile *m_pFile;

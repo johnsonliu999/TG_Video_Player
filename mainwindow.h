@@ -18,18 +18,24 @@ public:
     quint64 getDrawHandle();
     ~MainWindow();
 
+signals:
+    void openFile(const QString &path);
+    void startPlay();
+
 private:
-    void startDrawThread();
 
     Ui::MainWindow *ui;
     quint64 m_drawHandle;
     DrawThread *m_pDrawThread;
 
 public slots:
+    void on_updateTotalTime(const QString &text);
+    void on_updateCurTime(const QString &text);
 
 private slots:
     void on_playButton_clicked();
     void on_endButton_clicked();
+    void on_openButton_clicked();
 };
 
 #endif // MAINWINDOW_H
