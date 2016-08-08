@@ -27,8 +27,8 @@ struct DateTime {
 };
 
 struct FrameIndex {
-    quint64 timestamp;
-    quint64 offset;
+    quint32 timestamp;
+    quint32 offset;
 };
 
 struct BoxHeader {

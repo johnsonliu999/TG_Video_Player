@@ -5,7 +5,6 @@
 
 #include <QDebug>
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -13,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     m_drawHandle = ui->widget->winId();
-//    m_pDrawThread->run();
     m_pDrawThread->start();
 }
 

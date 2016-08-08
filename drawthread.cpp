@@ -27,8 +27,6 @@ void DrawThread::run()
         return ;
     }
 
-    qDebug() << "after seek :" << f.pos();
-
     if (f.getTimeLength()<=0) {
         qDebug() << "Length error";
         return ;
@@ -40,23 +38,17 @@ void DrawThread::run()
     quint8 *yuvBuffer = new quint8[YUV_SIZE];
 
     quint64 pts, yuvSize, type, width, height, readSize;
-    quint64 decHandle = PlayMedia_CreateVideoDecodec(0);
-    quint64 drawHandle = ((MainWindow *)this->parent())->m_drawHandle;
-    PlayMedia_GetPictureSize(decHandle, (long*)&width, (long*)&height);
-    qDebug() << "Width :" << width;
-    qDebug() << "Height :" << height;
-
-    drawHandle = PlayMedia_InitDDraw(drawHandle, width, height);
-
-    qDebug() << "Handle :" << drawHandle;
-
-
     FrameInfo frameInfo;
+    quint64 decHandle = PlayMedia_CreateVideoDecodec(0);
+    qDebug() << "decHandle :" << decHandle;
+    quint64 drawHandle = ((MainWindow *)this->parent())->m_drawHandle;
 
-    if (f.readFrame(buffer, BUFFER_SIZE, frameInfo) < 0) {
+    readSize = f.readFrame(buffer, BUFFER_SIZE, frameInfo);
+    if ( readSize < 0) {
         qDebug() << "Read Error";
         return ;
     }
+    pts = frameInfo.timestamp;
 
     if (ERR_SUCCESS != PlayMedia_DecodecVideo(decHandle, buffer, readSize, yuvBuffer, (long *)&yuvSize, (long *)&type)) {
         qDebug() << "Decode Error";
@@ -67,18 +59,27 @@ void DrawThread::run()
     qDebug() << "Width :" << width;
     qDebug() << "Height :" << height;
 
+    drawHandle = PlayMedia_InitDDraw(drawHandle, width, height);
+    PlayMedia_DDraw(drawHandle, yuvBuffer, width, height);
+
+    while (!f.atEnd()) {
+        readSize = f.readFrame(buffer, BUFFER_SIZE, frameInfo);
+        if (readSize < 0) {
+            qDebug() << "ReadFrame error";
+            return ;
+        }
+
+        if (ERR_SUCCESS != PlayMedia_DecodecVideo(decHandle, buffer, readSize, yuvBuffer, (long*)&yuvSize, (long*)&type)) {
+            qDebug() << "Decode error";
+            return ;
+        }
+
+        QThread::msleep(frameInfo.timestamp - pts);
+        pts = frameInfo.timestamp;
+
+        PlayMedia_DDraw(drawHandle, yuvBuffer, width, height);
 
 
-
-//    while (!f.atEnd()) {
-//        if (f.readFrame(buffer, BUFFER_SIZE, frameInfo) < 0) {
-//            qDebug() << "ReadFrame error";
-//            return ;
-//        }
-
-//        pts = frameInfo.timestamp;
-
-//        if (PlayMedia_DecodecVideo(decHandle, buffer, readSize, yuvBuffer, &yuvSize, &type))
-//    }
+    }
     exec();
 }

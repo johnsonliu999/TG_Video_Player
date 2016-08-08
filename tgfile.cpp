@@ -31,6 +31,7 @@ bool TGFile::open(const AbstractTGFile::OpenMode &mode)
         m_pFile->read((char*)&m_fileHeader, sizeof(FileHeaderBox));
         m_pFile->read((char*)&m_indexHeader, sizeof(IndexHeaderBox));
 
+
         for (int i = 0; i < (int)m_indexHeader.indexCount; i++) {
             FrameIndex index;
             m_pFile->read((char*)&index, sizeof(FrameIndex));
@@ -87,36 +88,32 @@ qint64 TGFile::readFrame(quint8 *buffer, const quint64 &bufSize, FrameInfo &fram
     // read frame header
     FrameHeaderBox frameHeader;
     quint64 readSize;
-    for (int i = 0; i < m_indexes.size(); i++) {
 
-
-        qDebug() << i;
-        if (m_pFile->read((char*)&frameHeader, sizeof(FrameHeaderBox)) < 0) {
-            qDebug() << "Read Error :" << m_pFile->errorString();
-            return -1;
-        }
-
-        qDebug() << "nal:" << frameHeader.header.nal;
-        qDebug() << "flag" << frameHeader.header.flag;
-        qDebug() << "size" << frameHeader.header.size;
-        qDebug() << "version" << frameHeader.header.version;
-
-        qDebug() << "m_indexes0";
-        qDebug() << m_indexes.at(0).offset;
-        qDebug() << m_indexes.at(0).timestamp - m_startTime;
-        qDebug() << "m_indexes1";
-        qDebug() << m_indexes.at(1).offset;
-        qDebug() << m_indexes.at(1).timestamp - m_startTime;
-
-        readSize = frameHeader.header.size - sizeof(FrameHeaderBox);
-//        if (bufSize < readSize) {
-            qDebug() << "Frame size error";
-            qDebug() << "Buf Size" << bufSize;
-            qDebug() << "Read Size" << readSize;
-  //      }
-
-        m_pFile->read((char*)buffer, readSize);
+    if (m_pFile->read((char*)&frameHeader, sizeof(FrameHeaderBox)) < 0) {
+        qDebug() << "Read Error :" << m_pFile->errorString();
+        return -1;
     }
+
+//    qDebug() << "nal:" << frameHeader.header.nal;
+//    qDebug() << "flag" << frameHeader.header.flag;
+//    qDebug() << "size" << frameHeader.header.size;
+//    qDebug() << "version" << frameHeader.header.version;
+
+//    qDebug() << "m_indexes0";
+//    qDebug() << m_indexes.at(0).offset;
+//    qDebug() << m_indexes.at(0).timestamp - m_startTime;
+//    qDebug() << "m_indexes1";
+//    qDebug() << m_indexes.at(1).offset;
+//    qDebug() << m_indexes.at(1).timestamp - m_startTime;
+
+    readSize = frameHeader.header.size - sizeof(FrameHeaderBox);
+    if (bufSize < readSize) {
+        qDebug() << "Frame size error";
+        qDebug() << "Buf Size" << bufSize;
+        qDebug() << "Read Size" << readSize;
+    }
+
+    m_pFile->read((char*)buffer, readSize);
 
 
     // fill frame type
