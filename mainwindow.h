@@ -19,6 +19,8 @@ public:
     ~MainWindow();
 
 private:
+    void startDrawThread();
+
     Ui::MainWindow *ui;
     quint64 m_drawHandle;
     DrawThread *m_pDrawThread;
@@ -26,6 +28,8 @@ private:
 public slots:
 
 private slots:
+    void on_playButton_clicked();
+    void on_endButton_clicked();
 };
 
 #endif // MAINWINDOW_H

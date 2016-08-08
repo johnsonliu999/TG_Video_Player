@@ -94,18 +94,6 @@ qint64 TGFile::readFrame(quint8 *buffer, const quint64 &bufSize, FrameInfo &fram
         return -1;
     }
 
-//    qDebug() << "nal:" << frameHeader.header.nal;
-//    qDebug() << "flag" << frameHeader.header.flag;
-//    qDebug() << "size" << frameHeader.header.size;
-//    qDebug() << "version" << frameHeader.header.version;
-
-//    qDebug() << "m_indexes0";
-//    qDebug() << m_indexes.at(0).offset;
-//    qDebug() << m_indexes.at(0).timestamp - m_startTime;
-//    qDebug() << "m_indexes1";
-//    qDebug() << m_indexes.at(1).offset;
-//    qDebug() << m_indexes.at(1).timestamp - m_startTime;
-
     readSize = frameHeader.header.size - sizeof(FrameHeaderBox);
     if (bufSize < readSize) {
         qDebug() << "Frame size error";
@@ -114,7 +102,6 @@ qint64 TGFile::readFrame(quint8 *buffer, const quint64 &bufSize, FrameInfo &fram
     }
 
     m_pFile->read((char*)buffer, readSize);
-
 
     // fill frame type
     switch (frameHeader.frameType) {

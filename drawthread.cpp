@@ -7,27 +7,33 @@
 #include <QDebug>
 
 
-DrawThread::DrawThread(QObject *parent) :
-    QThread(parent)
+DrawThread::DrawThread(const QString &fileName, QObject *parent) :
+    QThread(parent),
+    m_stop(false),
+    m_pTGFile(new TGFile(fileName))
 {
 
+}
+
+DrawThread::~DrawThread()
+{
+    delete m_pTGFile;
 }
 
 void DrawThread::run()
 {
     qDebug() << "Enter run()";
-    TGFile f("0_005_0_20160728152348_940_2_1.tg");
-    if (!f.open(AbstractTGFile::MODE_READ)) {
+    if (!m_pTGFile->open(AbstractTGFile::MODE_READ)) {
         qDebug() << "Open file error";
         return ;
     }
 
-    if (!f.seekFrameBeginning()) {
+    if (!m_pTGFile->seekFrameBeginning()) {
         qDebug() << "Seek error";
         return ;
     }
 
-    if (f.getTimeLength()<=0) {
+    if (m_pTGFile->getTimeLength()<=0) {
         qDebug() << "Length error";
         return ;
     }
@@ -43,7 +49,7 @@ void DrawThread::run()
     qDebug() << "decHandle :" << decHandle;
     quint64 drawHandle = ((MainWindow *)this->parent())->m_drawHandle;
 
-    readSize = f.readFrame(buffer, BUFFER_SIZE, frameInfo);
+    readSize = m_pTGFile->readFrame(buffer, BUFFER_SIZE, frameInfo);
     if ( readSize < 0) {
         qDebug() << "Read Error";
         return ;
@@ -62,8 +68,8 @@ void DrawThread::run()
     drawHandle = PlayMedia_InitDDraw(drawHandle, width, height);
     PlayMedia_DDraw(drawHandle, yuvBuffer, width, height);
 
-    while (!f.atEnd()) {
-        readSize = f.readFrame(buffer, BUFFER_SIZE, frameInfo);
+    while (!m_pTGFile->atEnd() && !m_stop) {
+        readSize = m_pTGFile->readFrame(buffer, BUFFER_SIZE, frameInfo);
         if (readSize < 0) {
             qDebug() << "ReadFrame error";
             return ;
@@ -78,8 +84,5 @@ void DrawThread::run()
         pts = frameInfo.timestamp;
 
         PlayMedia_DDraw(drawHandle, yuvBuffer, width, height);
-
-
     }
-    exec();
 }
