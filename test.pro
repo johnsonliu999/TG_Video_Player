@@ -14,7 +14,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     abstracttgfile.cpp \
-    tgfile.cpp
+    tgfile.cpp \
+    drawthread.cpp
 
 FORMS += \
     mainwindow.ui
@@ -24,7 +25,8 @@ HEADERS += \
     PlayMediaSDK.h \
     abstracttgfile.h \
     tgfile.h \
-    tgfiledef.h
+    tgfiledef.h \
+    drawthread.h
 
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.

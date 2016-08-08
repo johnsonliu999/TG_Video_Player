@@ -11,7 +11,6 @@ TGFile::TGFile(const QString &path) :
     m_startTime(0),
     m_endTime(0)
 {
-    qDebug() << "TGFile() :" << path;
 
 }
 
@@ -22,49 +21,25 @@ TGFile::~TGFile()
 
 bool TGFile::open(const AbstractTGFile::OpenMode &mode)
 {
-    qDebug() << "Open";
     bool res = false;
-
-    qDebug() << "m_fileheader :" << &m_fileHeader;
 
     switch (mode) {
     case MODE_READ: {
         res = m_pFile->open(QFile::ReadOnly);
         if (!res) return res;
 
-        m_fileSize = m_pFile->size();
-
-        IndexHeaderBox indexHeader;
         m_pFile->read((char*)&m_fileHeader, sizeof(FileHeaderBox));
-        m_pFile->read((char*)&indexHeader, sizeof(IndexHeaderBox));
+        m_pFile->read((char*)&m_indexHeader, sizeof(IndexHeaderBox));
 
-        qDebug() << sizeof(FileHeaderBox);
-        qDebug() << sizeof(IndexHeaderBox);
-        qDebug() << sizeof(BoxHeader);
-        qDebug() << sizeof(DateTime);
-
-        qDebug() << "Start Time";
-        qDebug() << m_fileHeader.startTime.day;
-        qDebug() << m_fileHeader.startTime.hour;
-        qDebug() << m_fileHeader.startTime.minute;
-        qDebug() << m_fileHeader.startTime.second;
-        qDebug() << "End Time";
-        qDebug() << m_fileHeader.endTime.day;
-        qDebug() << m_fileHeader.endTime.hour;
-        qDebug() << m_fileHeader.endTime.minute;
-        qDebug() << m_fileHeader.endTime.second;
-
-
-        for (int i = 0; i < (int)indexHeader.indexCount; i++) {
+        for (int i = 0; i < (int)m_indexHeader.indexCount; i++) {
             FrameIndex index;
             m_pFile->read((char*)&index, sizeof(FrameIndex));
+            m_indexes << index;
 
             if (!m_startTime) {
                 m_startTime = index.timestamp;
             }
         }
-
-        m_pFile->close();
 
         break;
     }
@@ -81,20 +56,135 @@ bool TGFile::open(const AbstractTGFile::OpenMode &mode)
 
 void TGFile::close()
 {
-
+    m_pFile->close();
 }
 
 quint64 TGFile::getTimeLength()
 {
-    return 0;
+    return m_fileHeader.timeLength;
 }
 
 quint64 TGFile::getFileSize()
 {
-    return 0;
+    return m_fileSize;
 }
 
 PictureSize TGFile::getPictureSize()
 {
-    return PictureSize();
+    return PictureSize(m_fileHeader.width, m_fileHeader.height);
+}
+
+///
+/// \brief TGFile::readFrame
+/// file pointer should be located at frame beginning
+/// \param buffer
+/// \param bufSize
+/// \param frameInfo
+/// \return
+///
+qint64 TGFile::readFrame(quint8 *buffer, const quint64 &bufSize, FrameInfo &frameInfo)
+{
+    // read frame header
+    FrameHeaderBox frameHeader;
+    quint64 readSize;
+    for (int i = 0; i < m_indexes.size(); i++) {
+
+
+        qDebug() << i;
+        if (m_pFile->read((char*)&frameHeader, sizeof(FrameHeaderBox)) < 0) {
+            qDebug() << "Read Error :" << m_pFile->errorString();
+            return -1;
+        }
+
+        qDebug() << "nal:" << frameHeader.header.nal;
+        qDebug() << "flag" << frameHeader.header.flag;
+        qDebug() << "size" << frameHeader.header.size;
+        qDebug() << "version" << frameHeader.header.version;
+
+        qDebug() << "m_indexes0";
+        qDebug() << m_indexes.at(0).offset;
+        qDebug() << m_indexes.at(0).timestamp - m_startTime;
+        qDebug() << "m_indexes1";
+        qDebug() << m_indexes.at(1).offset;
+        qDebug() << m_indexes.at(1).timestamp - m_startTime;
+
+        readSize = frameHeader.header.size - sizeof(FrameHeaderBox);
+//        if (bufSize < readSize) {
+            qDebug() << "Frame size error";
+            qDebug() << "Buf Size" << bufSize;
+            qDebug() << "Read Size" << readSize;
+  //      }
+
+        m_pFile->read((char*)buffer, readSize);
+    }
+
+
+    // fill frame type
+    switch (frameHeader.frameType) {
+    case TG_VIDEO_I:
+        frameInfo.frameType = VIDEO_I;
+        m_frameNum = 0;
+        break;
+    case TG_VIDEO_P:
+        frameInfo.frameType = VIDEO_P;
+        m_frameNum++;
+        break;
+    case TG_VIDEO_B:
+        frameInfo.frameType = VIDEO_B;
+        break;
+    case TG_AUDIO:
+        frameInfo.frameType = AUDIO;
+        break;
+    }
+
+    // fill frame encode
+    if (frameHeader.frameType == TG_AUDIO) {
+        switch (m_fileHeader.audioEncodeType) {
+        case TG_AUDIO_AAC:
+            frameInfo.encodeType = AUDIO_AAC;
+            break;
+        case TG_AUDIO_ALAW:
+            frameInfo.encodeType = AUDIO_ALAW;
+            break;
+        case TG_AUDIO_ULAW:
+            frameInfo.encodeType = AUDIO_ULAW;
+            break;
+        default:
+            frameInfo.encodeType = AUDIO_AAC;
+        }
+    } else {
+        frameInfo.encodeType = VIDEO_H264;
+    }
+
+    // fill frame timestamp
+    if (frameHeader.frameType == AUDIO) {
+        frameInfo.timestamp = m_frameTime;
+    } else {
+        frameInfo.timestamp = frameHeader.timestamp - m_startTime;
+    }
+
+    // fill frame number
+    frameInfo.frameNum = m_frameNum;
+
+    return readSize;
+}
+
+inline bool TGFile::atEnd()
+{
+    return m_pFile->atEnd();
+}
+
+bool TGFile::seekFrameBeginning()
+{
+    if (!m_pFile->seek(m_indexes.at(0).offset)) {
+        qDebug() << "Seek Error :" << m_pFile->errorString();
+        return false;
+    }
+    qDebug() << "Seek Frame Beginning :" << m_pFile->pos();
+    return true;
+}
+
+qint64 TGFile::pos()
+{
+    return m_pFile->pos();
 }

@@ -3,6 +3,19 @@
 
 #include <QDebug>
 
+#include "abstracttgfile.h"
+
+struct PictureSize {
+    quint64 width;
+    quint64 height;
+
+    PictureSize(const quint64 &w, const quint64 &h) :
+        width(w),height(h)
+    {
+
+    }
+};
+
 struct DateTime {
     quint16 year;
     quint8 month;
@@ -11,13 +24,6 @@ struct DateTime {
     quint8 minute;
     quint8 second;
     quint8 millsec;
-};
-
-struct FrameInfo {
-    AbstractTGFile::FrameType frameType;
-    AbstractTGFile::EncodeType encodeType;
-    quint64 timestamp;
-    quint64 frameNum;
 };
 
 struct FrameIndex {
@@ -29,7 +35,7 @@ struct BoxHeader {
     quint32 nal;
     quint32 flag:8;
     quint32 version:24;
-    quint32 boxSize;
+    quint32 size;
 
     BoxHeader() {
         nal = 0x01000000;

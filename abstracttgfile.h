@@ -5,12 +5,8 @@
 #include <QList>
 
 class QFile;
-
-
-struct PictureSize {
-    quint64 width;
-    quint64 height;
-};
+struct PictureSize;
+struct FrameInfo;
 
 class AbstractTGFile
 {
@@ -21,20 +17,20 @@ public:
     };
 
     enum FrameType {
-        FRAME_TYPE_SPS,
-        FRAME_TYPE_PPS,
-        FRAME_TYPE_I,
-        FRAME_TYPE_P,
-        FRAME_TYPE_B,
-        FRAME_TYPE_AUDIO
+        SPS,
+        PPS,
+        VIDEO_I,
+        VIDEO_P,
+        VIDEO_B,
+        AUDIO
     };
 
     enum EncodeType {
-        ENCODE_VIDEO_H264,
-        ENCODE_AUDIO_AAC,
-        ENCODE_AUDIO_ALAW,
-        ENCODE_AUDIO_ULAW,
-        ENCODE_AUDIO_PCM
+        VIDEO_H264,
+
+        AUDIO_AAC,
+        AUDIO_ALAW,
+        AUDIO_ULAW
     };
 
     AbstractTGFile();
@@ -44,6 +40,15 @@ public:
     virtual quint64 getTimeLength() = 0;
     virtual quint64 getFileSize() = 0;
     virtual PictureSize getPictureSize() = 0;
+    virtual qint64 readFrame(quint8* buffer, const quint64 &bufSize, FrameInfo &frameInfo) = 0;
+    virtual bool atEnd() = 0;
+};
+
+struct FrameInfo {
+    AbstractTGFile::FrameType frameType;
+    AbstractTGFile::EncodeType encodeType;
+    quint64 timestamp;
+    quint64 frameNum;
 };
 
 #endif // ABSTRACTTGFILE_H
