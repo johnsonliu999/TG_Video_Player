@@ -24,11 +24,13 @@ signals:
     void updateTotalTime(const QString &totalTime);
     void updateCurTime(const QString &curTime);
     void updateStatusBar(const QString &text);
+    void updateSlider(const int &value);
 
 public slots:
-    void openFile(const QString &path);
+    void on_openFile(const QString &path);
     void on_startPlay();
     void on_stopPlay();
+    void on_jumpTo(const quint64 time);
 
 private slots:
     void on_timeout();
@@ -42,6 +44,7 @@ private:
     quint8 *m_pYuv;
 
     bool m_stop;
+    bool m_play;
 
     quint64 m_pts;
     long m_width;
@@ -50,7 +53,6 @@ private:
     quint64 m_drawHandle;
     quint64 m_dispHandle;
 
-    quint64 m_curTime;
     quint64 m_totalTime;
 
     int m_readSize;

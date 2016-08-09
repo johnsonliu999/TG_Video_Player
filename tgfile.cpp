@@ -79,6 +79,7 @@ bool TGFile::open(const QString &path)
     m_pFile->read((char*)&m_fileHeader, sizeof(FileHeaderBox));
     m_pFile->read((char*)&m_indexHeader, sizeof(IndexHeaderBox));
 
+    m_indexes.clear();
     FrameIndex index;
     m_pFile->read((char*)&index, sizeof(FrameIndex));
     m_indexes << index;
@@ -199,24 +200,19 @@ inline bool TGFile::atEnd()
     return m_pFile->atEnd();
 }
 
-bool TGFile::seekFrameBeginning()
-{
-    if (!m_pFile->seek(m_indexes.at(0).offset)) {
-        qDebug() << "Seek Error :" << m_pFile->errorString();
-        return false;
-    }
-    qDebug() << "Seek Frame Beginning :" << m_pFile->pos();
-    return true;
-}
-
 bool TGFile::seek(const quint64 &relativeTime)
 {
     for (int i = 0; i < m_indexes.size(); i++) {
         if (m_indexes.at(i).timestamp - m_startTime >= relativeTime) {
-            qDebug() << i << m_indexes.at(i).offset;
+            qDebug() << "seek " << i;
+            qDebug() << m_indexes.at(i).timestamp;
+            qDebug() << m_startTime;
+            qDebug() << "relative :" << m_indexes.at(i).timestamp - m_startTime;
+            qDebug() << "current time :" << relativeTime;
             return m_pFile->seek(m_indexes.at(i).offset);
         }
     }
+    return false;
 }
 
 qint64 TGFile::pos()

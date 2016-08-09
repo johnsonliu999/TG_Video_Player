@@ -36,7 +36,6 @@ public:
     PictureSize getPictureSize() override final;
     qint64 readFrame(quint8* buffer, const quint64 &bufSize, FrameInfo &frameInfo) override final;
     bool atEnd() override final;
-    bool seekFrameBeginning();
     bool seek(const quint64 &relativeTime);
     qint64 pos();
 private:

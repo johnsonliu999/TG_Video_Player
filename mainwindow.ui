@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>767</width>
-    <height>307</height>
+    <width>565</width>
+    <height>408</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,108 +19,87 @@
      <rect>
       <x>51</x>
       <y>39</y>
-      <width>379</width>
-      <height>211</height>
+      <width>381</width>
+      <height>311</height>
      </rect>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider">
-    <property name="geometry">
-     <rect>
-      <x>51</x>
-      <y>11</y>
-      <width>261</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="playButton">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>450</x>
       <y>10</y>
-      <width>75</width>
-      <height>23</height>
+      <width>77</width>
+      <height>83</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Play</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="endButton">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>140</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>End</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="openButton">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>110</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Open</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>10</y>
-      <width>80</width>
-      <height>14</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
+    <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QLabel" name="curTimeLabel">
+      <widget class="QPushButton" name="playButton">
        <property name="text">
-        <string>00:00</string>
+        <string>Play</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="stopButton">
        <property name="text">
-        <string>/</string>
+        <string>Stop</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="totalTimeLabel">
+     <item row="2" column="0">
+      <widget class="QPushButton" name="openButton">
        <property name="text">
-        <string>00:00</string>
+        <string>Open</string>
        </property>
       </widget>
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="stopButton">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>40</y>
-      <width>75</width>
-      <height>23</height>
+      <x>51</x>
+      <y>10</y>
+      <width>381</width>
+      <height>24</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Stop</string>
-    </property>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QSlider" name="horizontalSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="curTimeLabel">
+         <property name="text">
+          <string>00:00</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>/</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="totalTimeLabel">
+         <property name="text">
+          <string>00:00</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -128,7 +107,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>767</width>
+     <width>565</width>
      <height>23</height>
     </rect>
    </property>
