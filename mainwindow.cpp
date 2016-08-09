@@ -12,11 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pDrawThread(new DrawThread(this))
 {
     ui->setupUi(this);
-    m_drawHandle = ui->widget->winId();
+    m_pDrawThread->m_drawHandle = ui->widget->winId();
 
     connect(this, &MainWindow::openFile, m_pDrawThread, &DrawThread::openFile);
+    connect(this, &MainWindow::startPlay, m_pDrawThread, &DrawThread::on_startPlay);
     connect(m_pDrawThread, &DrawThread::updateTotalTime, this, &MainWindow::on_updateTotalTime);
     connect(m_pDrawThread, &DrawThread::updateCurTime, this, &MainWindow::on_updateCurTime);
+    connect(m_pDrawThread, &DrawThread::updateStatusBar, this, &MainWindow::on_updateStatusBar);
     m_pDrawThread->start();
 }
 
@@ -27,6 +29,8 @@ quint64 MainWindow::getDrawHandle()
 
 MainWindow::~MainWindow()
 {
+    m_pDrawThread->quit();
+    m_pDrawThread->wait();
     delete ui;
 }
 
@@ -40,17 +44,14 @@ void MainWindow::on_updateCurTime(const QString &text)
     ui->curTimeLabel->setText(text);
 }
 
+void MainWindow::on_updateStatusBar(const QString &text)
+{
+    statusBar()->showMessage(text, 2000);
+}
+
 void MainWindow::on_playButton_clicked()
 {
-//    if (!m_pDrawThread) {
-//        startDrawThread();
-//    } else if (m_pDrawThread->isFinished()) {
-//        delete m_pDrawThread;
-//        startDrawThread();
-//    } else {
-//        qDebug() << "Please end first";
-//        return ;
-//    }
+    emit startPlay();
 }
 
 void MainWindow::on_endButton_clicked()

@@ -213,6 +213,7 @@ bool TGFile::seek(const quint64 &relativeTime)
 {
     for (int i = 0; i < m_indexes.size(); i++) {
         if (m_indexes.at(i).timestamp - m_startTime >= relativeTime) {
+            qDebug() << i << m_indexes.at(i).offset;
             return m_pFile->seek(m_indexes.at(i).offset);
         }
     }
