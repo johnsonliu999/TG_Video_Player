@@ -16,7 +16,6 @@ DrawThread::DrawThread(QObject *parent) :
     m_pts(0),
     m_stop(false)
 {
-    qDebug() << "Thread draw handle :" << m_drawHandle;
     m_decHandle = PlayMedia_CreateVideoDecodec(0);
 }
 
@@ -26,69 +25,6 @@ DrawThread::~DrawThread()
     delete m_pBuffer;
     delete m_pYuv;
 }
-
-//    if (!m_pTGFile->open(AbstractTGFile::MODE_READ)) {
-//        qDebug() << "Open file error";
-//        return ;
-//    }
-
-//    if (!m_pTGFile->seekFrameBeginning()) {
-//        qDebug() << "Seek error";
-//        return ;
-//    }
-
-//    if (m_pTGFile->getTimeLength()<=0) {
-//        qDebug() << "Length error";
-//        return ;
-//    }
-
-//    const quint64 BUFFER_SIZE = 512 * 1024;
-//    const quint64 YUV_SIZE = 1920 * 1080 * 3;
-//    quint8 buffer[BUFFER_SIZE] = {};
-//    quint8 *yuvBuffer = new quint8[YUV_SIZE];
-
-//    quint64 pts, yuvSize, type, width, height, readSize;
-//    FrameInfo frameInfo;
-//    quint64 decHandle = PlayMedia_CreateVideoDecodec(0);
-//    qDebug() << "decHandle :" << decHandle;
-//    quint64 drawHandle = ((MainWindow *)this->parent())->m_drawHandle;
-
-//    readSize = m_pTGFile->readFrame(buffer, BUFFER_SIZE, frameInfo);
-//    if ( readSize < 0) {
-//        qDebug() << "Read Error";
-//        return ;
-//    }
-//    pts = frameInfo.timestamp;
-
-//    if (ERR_SUCCESS != PlayMedia_DecodecVideo(decHandle, buffer, readSize, yuvBuffer, (long *)&yuvSize, (long *)&type)) {
-//        qDebug() << "Decode Error";
-//        return ;
-//    }
-
-//    PlayMedia_GetPictureSize(decHandle, (long*)&width, (long*)&height);
-//    qDebug() << "Width :" << width;
-//    qDebug() << "Height :" << height;
-
-//    drawHandle = PlayMedia_InitDDraw(drawHandle, width, height);
-//    PlayMedia_DDraw(drawHandle, yuvBuffer, width, height);
-
-//    while (!m_pTGFile->atEnd() && !m_stop) {
-//        readSize = m_pTGFile->readFrame(buffer, BUFFER_SIZE, frameInfo);
-//        if (readSize < 0) {
-//            qDebug() << "ReadFrame error";
-//            return ;
-//        }
-
-//        if (ERR_SUCCESS != PlayMedia_DecodecVideo(decHandle, buffer, readSize, yuvBuffer, (long*)&yuvSize, (long*)&type)) {
-//            qDebug() << "Decode error";
-//            return ;
-//        }
-
-//        QThread::msleep(frameInfo.timestamp - pts);
-//        pts = frameInfo.timestamp;
-
-//        PlayMedia_DDraw(drawHandle, yuvBuffer, width, height);
-//    }
 
 void DrawThread::openFile(const QString &path)
 {
@@ -126,7 +62,7 @@ void DrawThread::openFile(const QString &path)
     qDebug() << "Height :" << m_height;
 
     // init draw
-    m_drawHandle = PlayMedia_InitDDraw(m_drawHandle, m_width, m_height);
+    m_drawHandle = PlayMedia_InitDDraw(m_dispHandle, m_width, m_height);
 
     // update total time display
     m_totalTime = m_pTGFile->getTimeLength();
@@ -152,7 +88,14 @@ void DrawThread::on_startPlay()
         return ;
     }
 
+    m_stop = false;
+
     processFrame();
+}
+
+void DrawThread::on_stopPlay()
+{
+    m_stop = true;
 }
 
 void DrawThread::on_timeout()
@@ -170,12 +113,14 @@ inline void DrawThread::processFrame()
 {
     PlayMedia_DDraw(m_drawHandle, m_pYuv, m_width, m_height);
 
+    if (m_stop) return;
+
     if (m_pTGFile->atEnd()) return;
     FrameInfo frameInfo;
+
     m_readSize = m_pTGFile->readFrame(m_pBuffer, BUFFER_SIZE, frameInfo);
     int waitTime = frameInfo.timestamp - m_pts;
     m_pts = frameInfo.timestamp;
 
-    if (m_stop) return ;
     QTimer::singleShot(waitTime, this, &DrawThread::on_timeout);
 }

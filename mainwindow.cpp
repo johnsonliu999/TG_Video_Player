@@ -12,19 +12,15 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pDrawThread(new DrawThread(this))
 {
     ui->setupUi(this);
-    m_pDrawThread->m_drawHandle = ui->widget->winId();
+    m_pDrawThread->m_dispHandle = ui->widget->winId();
 
     connect(this, &MainWindow::openFile, m_pDrawThread, &DrawThread::openFile);
     connect(this, &MainWindow::startPlay, m_pDrawThread, &DrawThread::on_startPlay);
+    connect(this, &MainWindow::stopPlay, m_pDrawThread, &DrawThread::on_stopPlay);
     connect(m_pDrawThread, &DrawThread::updateTotalTime, this, &MainWindow::on_updateTotalTime);
     connect(m_pDrawThread, &DrawThread::updateCurTime, this, &MainWindow::on_updateCurTime);
     connect(m_pDrawThread, &DrawThread::updateStatusBar, this, &MainWindow::on_updateStatusBar);
     m_pDrawThread->start();
-}
-
-quint64 MainWindow::getDrawHandle()
-{
-    return ui->widget->winId();
 }
 
 MainWindow::~MainWindow()
@@ -56,7 +52,6 @@ void MainWindow::on_playButton_clicked()
 
 void MainWindow::on_endButton_clicked()
 {
-    m_pDrawThread->wait();
 }
 
 void MainWindow::on_openButton_clicked()
@@ -67,4 +62,9 @@ void MainWindow::on_openButton_clicked()
         return ;
     }
     emit openFile(fileName);
+}
+
+void MainWindow::on_stopButton_clicked()
+{
+    emit stopPlay();
 }

@@ -14,12 +14,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
-    quint64 getDrawHandle();
     ~MainWindow();
 
 signals:
     void openFile(const QString &path);
     void startPlay();
+    void stopPlay();
 
 private:
 
@@ -35,6 +35,7 @@ private slots:
     void on_playButton_clicked();
     void on_endButton_clicked();
     void on_openButton_clicked();
+    void on_stopButton_clicked();
 };
 
 #endif // MAINWINDOW_H

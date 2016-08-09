@@ -28,6 +28,7 @@ signals:
 public slots:
     void openFile(const QString &path);
     void on_startPlay();
+    void on_stopPlay();
 
 private slots:
     void on_timeout();
@@ -47,6 +48,7 @@ private:
     long m_height;
     quint64 m_decHandle;
     quint64 m_drawHandle;
+    quint64 m_dispHandle;
 
     quint64 m_curTime;
     quint64 m_totalTime;
