@@ -26,11 +26,20 @@ struct DateTime {
     quint8 millsec;
 };
 
+///
+/// \brief The FrameIndex struct
+/// Contain frame pts and its offset in the file.
+///
 struct FrameIndex {
     quint32 timestamp;
     quint32 offset;
 };
 
+///
+/// \brief The BoxHeader struct
+/// basic header information. Every header should contain it.
+/// Include version, flag, size.
+///
 struct BoxHeader {
     quint32 nal;
     quint32 flag:8;
@@ -43,6 +52,10 @@ struct BoxHeader {
     }
 };
 
+///
+/// \brief The IndexHeaderBox struct
+/// index header. Contain index information. Followed by a series of frame indexes.
+///
 struct IndexHeaderBox {
     BoxHeader header;
     quint32 indexCount;
@@ -54,6 +67,10 @@ struct IndexHeaderBox {
     }
 };
 
+///
+/// \brief The FrameHeaderBox struct
+/// frame header. Contain frame information.
+///
 struct FrameHeaderBox {
     BoxHeader header;
     quint32 frameType;
@@ -66,6 +83,10 @@ struct FrameHeaderBox {
     }
 };
 
+///
+/// \brief The FileHeaderBox struct
+/// file header. Contain whole file information.
+///
 struct FileHeaderBox {
     BoxHeader header;
 

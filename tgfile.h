@@ -33,7 +33,6 @@ public:
     void close() override final;
     quint64 getTimeLength() override final;
     quint64 getFileSize() override final;
-    PictureSize getPictureSize() override final;
     qint64 readFrame(quint8* buffer, const quint64 &bufSize, FrameInfo &frameInfo) override final;
     bool atEnd() override final;
     bool seek(const quint64 &relativeTime);

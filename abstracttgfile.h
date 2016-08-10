@@ -39,7 +39,6 @@ public:
     virtual void close() = 0;
     virtual quint64 getTimeLength() = 0;
     virtual quint64 getFileSize() = 0;
-    virtual PictureSize getPictureSize() = 0;
     virtual qint64 readFrame(quint8* buffer, const quint64 &bufSize, FrameInfo &frameInfo) = 0;
     virtual bool atEnd() = 0;
 };

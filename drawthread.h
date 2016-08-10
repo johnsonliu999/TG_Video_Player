@@ -6,6 +6,11 @@
 class TGFile;
 class QTimer;
 
+///
+/// \brief The DrawThread class
+/// is a thread to read frame and draw on the widget.
+///
+
 class DrawThread : public QThread
 {
     Q_OBJECT

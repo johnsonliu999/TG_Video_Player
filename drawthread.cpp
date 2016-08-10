@@ -7,7 +7,16 @@
 #include <QDebug>
 #include <QTimer>
 
-
+///
+/// \brief DrawThread::DrawThread
+///
+/// @verbatim
+/// 1. init decodec handle
+/// 2. allocate space for buffer
+/// @endverbatim
+///
+/// \param parent
+///
 DrawThread::DrawThread(QObject *parent) :
     QThread(parent),
     m_pTGFile(new TGFile),
@@ -27,6 +36,22 @@ DrawThread::~DrawThread()
     delete m_pYuv;
 }
 
+///
+/// \brief DrawThread::on_openFile
+/// called when signal openFile emitted.
+///
+/// @verbatim
+/// 1. open file and read the file header information stored in m_pTGFile.
+/// 2. read frame.
+/// 3. decode first frame.
+/// 4. set width and height.
+/// 5. initialize the draw handle.
+/// 6. update total time display.
+/// @endverbatim
+///
+///
+/// \param path file name.
+///
 void DrawThread::on_openFile(const QString &path)
 {
     if (!m_pTGFile->open(path)) {
@@ -83,6 +108,20 @@ void DrawThread::on_openFile(const QString &path)
     emit updateStatusBar(QString("File loaded succeed"));
 }
 
+///
+/// \brief DrawThread::on_startPlay
+/// called when signal startPlay is emitted.
+///
+/// @verbatim
+/// process frame :
+/// 1. draw
+/// 2. update time
+/// 3. read frame
+/// 4. start timer
+/// @endverbatim
+///
+///
+///
 void DrawThread::on_startPlay()
 {
     if (!m_pTGFile->isOpen()) {
@@ -98,11 +137,29 @@ void DrawThread::on_startPlay()
     processFrame();
 }
 
+///
+/// \brief DrawThread::on_stopPlay
+/// set m_stop to true to stop timer.
+///
 void DrawThread::on_stopPlay()
 {
     m_stop = true;
 }
 
+///
+/// \brief DrawThread::on_jumpTo
+/// when user moves the slider.
+///
+/// @verbatim
+/// 1. seek proper file point
+/// 2. read next frame
+/// 3. update pts
+/// @endverbatim
+///
+/// waiting for decoding.
+///
+/// \param time
+///
 void DrawThread::on_jumpTo(const quint64 time)
 {
     if (!m_pTGFile->seek(time)) {
@@ -115,6 +172,21 @@ void DrawThread::on_jumpTo(const quint64 time)
     m_pts = frameInfo.timestamp;
 }
 
+///
+/// \brief DrawThread::on_timeout
+/// when one shot timer timeout.
+///
+/// @verbatim
+/// 1. decode.
+/// 2. process frame.
+///     1. draw
+///     2. read frame
+///     3. update pts
+///     4. start timer
+/// @endverbatim
+///
+///
+///
 void DrawThread::on_timeout()
 {
     long yuvSize, type;
@@ -127,11 +199,15 @@ void DrawThread::on_timeout()
 
 ///
 /// \brief DrawThread::processFrame
+/// inline function.
+///
+/// @verbatim
 /// include:
 /// 1. draw
 /// 2. read frame
 /// 3. update pts
 /// 4. start timer
+/// @endverbatim
 ///
 inline void DrawThread::processFrame()
 {

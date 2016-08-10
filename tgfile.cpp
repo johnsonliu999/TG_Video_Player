@@ -112,11 +112,6 @@ quint64 TGFile::getFileSize()
     return m_fileSize;
 }
 
-PictureSize TGFile::getPictureSize()
-{
-    return PictureSize(m_fileHeader.width, m_fileHeader.height);
-}
-
 ///
 /// \brief TGFile::readFrame
 /// file pointer should be located at certain frame offset
